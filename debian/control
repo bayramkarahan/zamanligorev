@@ -1,11 +1,11 @@
-Source: e-zil
+Source: zamanligorev
 Section: utils
 Priority: optional
 Maintainer: Bayram KARAHAN <bayramk@gmail.com>
 Build-Depends: debhelper (>= 10), 
     libc6,
     libgcc1,
-    libgcc-10-dev,
+    libgcc-12-dev,
     libgl1-mesa-glx | libgl1,
     libqt5core5a,
     libqt5gui5,
@@ -19,10 +19,8 @@ Build-Depends: debhelper (>= 10),
 Standards-Version: 3.9.8
 Homepage: http://pardus.org.tr
 
-Package: e-zil
+Package: zamanligorev
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
-     libqt5multimedia5-plugins,
-     libqt5multimediawidgets5,
      libqt5xml5
-Description: E-Zil uygulaması
+Description: zamanligorev uygulaması
