@@ -43,31 +43,14 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
  {
-      //localDir="/usr/share/zamanligorev/";
-      localDir="./";
+      localDir="/usr/share/zamanligorev/";
+      //localDir="./";
    // wl=new QWidgetAction(this);
     timer1.setSingleShot(true);
     connect(&timer1, SIGNAL(timeout()), &loop, SLOT(quit()));
   //  connect(this, SIGNAL(replayReceived()), &loop, SLOT(quit()));
-
-    trayIcon=new QSystemTrayIcon(this);
-
-       //*******************tray**********************************/
-      // Tray icon menu
-      auto menu = this->createMenu();
-      this->trayIcon->setContextMenu(menu);
-
-      // App icon
-      auto appIcon = QIcon(":/icons/zamanligorev.svg");
-      this->trayIcon->setIcon(appIcon);
-      this->setWindowIcon(appIcon);
-
-      // Displaying the tray icon
-      this->trayIcon->show();     // Note: without explicitly calling show(), QSystemTrayIcon::activated signal will never be emitted!
-
-      // Interaction
-      connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
-     // gizle();
+    auto appIcon = QIcon(":/icons/zamanligorev.svg");
+       this->setWindowIcon(appIcon);
 
 
       /**********************form ayarları yapıldı***********************/
@@ -77,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
      en=boy;
       setFixedWidth(500);
       setFixedHeight(400);
-      setWindowTitle("zamanligorev");
+      setWindowTitle("ZamanliGorev");
       QRect screenGeometry = QApplication::desktop()->screenGeometry();
       int x = (screenGeometry.width()/2 - this->width()/2);
       int y = (screenGeometry.height() - this->height()) / 2;
@@ -90,22 +73,26 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
       init();// Başlangıç ayarları yapıldı
+      qDebug()<<"ekranı göster";
+      QFont ff( "Arial", 7.5, QFont::Normal);
+      tw->setFont(ff);
+    tw->clear();
+     tw->addTab(giris(),"Giriş");
+      tw->addTab(ayar(),"Ayarlar");
+
+      tw->addTab(hakkinda(),"Hakkında");
+     // this->showNormal();
 
     /***********************Tab Ayarları Yapıldı********************/
 
       /*********************************************************************************/
-
-      timergizle = new QTimer(this);
-      connect(timergizle, SIGNAL(timeout()), this, SLOT(gizle()));
-      timergizle->start(1);
-
 
 
 
 
       timerGorevBaslama = new QTimer(this);
       connect(timerGorevBaslama, SIGNAL(timeout()), this, SLOT(gorevKontrol()));
-      timerGorevBaslama->start(6000);
+     // timerGorevBaslama->start(6000);
 
 
 
@@ -136,56 +123,62 @@ void MainWindow::gorevKontrol()
         /***************************komut1*********************************/
         if(lineayar.split("|")[1]=="task1Time"&&task1State==false)
         {
+            resetStatus();
             task1State=true;
             // qDebug()<<"task1Time";
-            QString kmt=QString(listGetLine(ayarlist,"task1Command").split("|")[2]);
+            QString kmt=QString("echo "+listGetLine(ayarlist,"task1Command").split("|")[2]+">/tmp/zamanligorevcommand");
             system(kmt.toStdString().c_str());
         }
 
         /***************************komut2*********************************/
         if(lineayar.split("|")[1]=="task2Time"&&task2State==false)
         {
+            resetStatus();
             task2State=true;
             // qDebug()<<"task2Time";
 
-            QString kmt=QString(listGetLine(ayarlist,"task2Command").split("|")[2]);
-            system(kmt.toStdString().c_str());
+            QString kmt=QString("echo "+listGetLine(ayarlist,"task2Command").split("|")[2]+">/tmp/zamanligorevcommand");
+             system(kmt.toStdString().c_str());
         }
 
         /***************************komut3*********************************/
         if(lineayar.split("|")[1]=="task3Time"&&task3State==false)
         {
+            resetStatus();
             task3State=true;
             // qDebug()<<"task3Time";
 
-            QString kmt=QString(listGetLine(ayarlist,"task3Command").split("|")[2]);
+            QString kmt=QString("echo "+listGetLine(ayarlist,"task3Command").split("|")[2]+">/tmp/zamanligorevcommand");
             system(kmt.toStdString().c_str());
         }
 
         /***************************komut4*********************************/
         if(lineayar.split("|")[1]=="task4Time"&&task4State==false)
         {
+            resetStatus();
             task4State=true;
             // qDebug()<<"task4Time";
 
-            QString kmt=QString(listGetLine(ayarlist,"task4Command").split("|")[2]);
-            system(kmt.toStdString().c_str());
+            QString kmt=QString("echo "+listGetLine(ayarlist,"task4Command").split("|")[2]+">/tmp/zamanligorevcommand");
+             system(kmt.toStdString().c_str());
         }
 
         /***************************komut5*********************************/
         if(lineayar.split("|")[1]=="task5Time"&&task5State==false)
         {
-
+            resetStatus();
             task5State=true;
             // qDebug()<<"task5Time";
 
-            QString kmt=QString(listGetLine(ayarlist,"task5Command").split("|")[2]);
+            QString kmt=QString("echo "+listGetLine(ayarlist,"task5Command").split("|")[2]+">/tmp/zamanligorevcommand");
             system(kmt.toStdString().c_str());
         }
 
 
     }
 }
+
+
 MainWindow::~MainWindow()
 {
   //  delete ui;
@@ -462,13 +455,13 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason_)
 
 void MainWindow::WidgetClosed()
 {
-    QWidget::hide();
+    //QWidget::hide();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     emit WidgetClosed();
-     event->ignore();
+   //  event->ignore();
 
 }
 

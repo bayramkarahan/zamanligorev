@@ -6,9 +6,9 @@ Type=Application
 Comment=Simple Qt based zamanligorev Application
 Comment[tr]=Basit Qt tabanlı zamanligorev Uygulaması
 Terminal=false
-Exec=sh -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY zamanligorev"
+Exec=/usr/bin/zamanligorevtray
 Icon=/usr/share/zamanligorev/zamanligorev.svg
 Categories=Qt;Utility;
 Keywords=zaman;görev;task;
 GenericName=zamanligorev
-Name[tr_TR]=ZamanliGorev
+Name[tr_TR]=autostartzamanligorevtray.desktop

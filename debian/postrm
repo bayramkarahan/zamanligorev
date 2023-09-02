@@ -4,3 +4,6 @@
 
 
 rm -rf /usr/share/zamanligorev
+
+systemctl stop zamanligorev.service || true
+systemctl disable zamanligorev.service || true

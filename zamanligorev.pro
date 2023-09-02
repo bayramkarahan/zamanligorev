@@ -34,20 +34,35 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 target.path = /usr/bin
 
+zamanligorevtray.files = zamanligorevtray
+zamanligorevtray.path = /usr/bin
+
 desktop_file.files = zamanligorev.desktop
 desktop_file.path = /usr/share/applications/
 
 icon.files = icons/zamanligorev.svg
-icon.path = /usr/share/zamanligorev
+icon.path = /usr/share/zamanligorev/
 
 conf.files = zamanligorev.conf
-conf.path = /usr/share/zamanligorev
+conf.path = /usr/share/zamanligorev/
 
-auto_start.files = zamanligorev.desktop
+auto_start.files = autostartzamanligorevtray.desktop
 auto_start.path = /etc/xdg/autostart/
 
-INSTALLS += target desktop_file icon  auto_start conf
+servicescript.files = zamanligorevservicescript
+servicescript.path = /usr/bin
+
+
+service.files = zamanligorev.service
+service.path = /etc/systemd/system/
+
+
+
+INSTALLS += target desktop_file icon conf auto_start zamanligorevtray servicescript service
 
 DISTFILES += \
    zamanligorev.conf\
-    zamanligorev.desktop
+    zamanligorev.desktop \
+    autostartzamanligorevtray.desktop \
+    zamanligorevtray \
+    zamanligorevservicescript

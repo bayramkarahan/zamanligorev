@@ -38,27 +38,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .          *
  *****************************************************************************/
 #include <QApplication>
-#include<singleinstance.h>
-
-#define SINGLE_INSTANCE ".zamanligorev"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QString name = SINGLE_INSTANCE;
 
-    SingleInstance cInstance;
-    if(cInstance.hasPrevious(name, QCoreApplication::arguments()))
-    {
-        qDebug() << "zamanligorev Zaten Açık...";
-        return 0;
-    }
-    if (cInstance.listen(name)) {
-        qDebug() << "zamanligorev Çalışıyor..";
-    } else {
-        qDebug() << "zamanligorev Çalışması İptal Edildi...";
-        return 0;
-    }
+
     MainWindow w;
     w.show();
 

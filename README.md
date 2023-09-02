@@ -1,5 +1,5 @@
-# zamanligorev
-Debian Tabanlı Sistemlerde Kullanılmak Üzere Kodlanmış Zamanlanmış Okul Zil Yazılımı
+# ZamanliGorev
+Debian Tabanlı Sistemlerde Kullanılmak Üzere Kodlanmış Zamanlanmış Görevleri Yapan Uygulama Yazılımı
 <br/>
 
 ![zamanligorev](https://github.com/bayramkarahan/zamanligorev/blob/master/zamanligorev1.png)
