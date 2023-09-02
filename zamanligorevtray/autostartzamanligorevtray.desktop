@@ -10,5 +10,5 @@ Exec=/usr/bin/zamanligorevtray
 Icon=/usr/share/zamanligorev/zamanligorev.svg
 Categories=Qt;Utility;
 Keywords=zaman;görev;task;
-GenericName=zamanligorev
-Name[tr_TR]=autostartzamanligorevtray.desktop
+GenericName=autostartzamanligorevtray
+Name[tr_TR]=autostartzamanligorevtray
