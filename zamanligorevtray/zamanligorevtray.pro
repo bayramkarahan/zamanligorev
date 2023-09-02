@@ -32,7 +32,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 target.path = /usr/bin
 
 icon.files = icons/zamanligorev.svg
-icon.path = /usr/share/zamanligorev
+icon.path = /usr/share/icons
 
 auto_start.files = autostartzamanligorevtray.desktop
 auto_start.path = /etc/xdg/autostart/

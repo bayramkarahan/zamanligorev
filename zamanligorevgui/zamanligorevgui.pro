@@ -38,7 +38,7 @@ desktop_file.files = zamanligorevgui.desktop
 desktop_file.path = /usr/share/applications/
 
 icon.files = icons/zamanligorev.svg
-icon.path = /usr/share/zamanligorev/
+icon.path = /usr/share/icons/
 
 conf.files = zamanligorev.conf
 conf.path = /usr/share/zamanligorev/
