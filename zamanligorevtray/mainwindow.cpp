@@ -92,24 +92,20 @@ MainWindow::MainWindow(QWidget *parent) :
       timerGorevBaslama = new QTimer(this);
       connect(timerGorevBaslama, SIGNAL(timeout()), this, SLOT(gorevKontrol()));
       timerGorevBaslama->start(6000);
-
 }
 
 void MainWindow::init()
 {
  ///  qDebug()<<"init...";
-
-    const QDate dt = QDate::currentDate();
     QStringList listconf=fileToList("zamanligorev.conf");
-    ayarlist=listGetList(listconf, "ayar",0);//0 sütun bilgisi olan güne göre listconf listesinden filitreleniyor
-    /******************Player ve Playlist ayarları yapılıyor***********/
-    }
+    ayarlist=listGetList(listconf, "ayar",0);//0 sütun bilgisi olan güne göre listconf listesinden filitreleniyor  
+}
 
 
 
 void MainWindow::gorevKontrol()
 {
-     init();//ayarların yüklendiği yer
+    init();//ayarların yüklendiği yer
     int currentsaniye=QTime::currentTime().hour()*60*60+QTime::currentTime().minute()*60+QTime::currentTime().second();
 
     int currentsaatsaniye=QTime::currentTime().hour()*60*60+QTime::currentTime().minute()*60;
