@@ -1,10 +1,10 @@
 [Unit]
-Description=zamanligorevservicescript
+Description=zamanligorevservis
 
 [Service]
 Type=simple
 RemainAfterExit=true
-ExecStart=/usr/bin/zamanligorevservicescript
+ExecStart=/usr/bin/zamanligorevservis
 
 [Install]
 WantedBy=multi-user.target

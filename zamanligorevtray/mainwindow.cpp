@@ -91,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
       timerGorevBaslama = new QTimer(this);
       connect(timerGorevBaslama, SIGNAL(timeout()), this, SLOT(gorevKontrol()));
-      timerGorevBaslama->start(6000);
+     // timerGorevBaslama->start(6000);
 }
 
 void MainWindow::init()

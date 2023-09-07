@@ -43,15 +43,9 @@ icon.path = /usr/share/icons/
 conf.files = zamanligorev.conf
 conf.path = /usr/share/zamanligorev/
 
-servicescript.files = zamanligorevservicescript
-servicescript.path = /usr/bin
 
-service.files = zamanligorev.service
-service.path = /etc/systemd/system/
-
-INSTALLS += target desktop_file icon conf auto_start servicescript service
+INSTALLS += target desktop_file icon conf
 
 DISTFILES += \
    zamanligorev.conf\
-    zamanligorevgui.desktop \
-    zamanligorevservicescript
+    zamanligorevgui.desktop
