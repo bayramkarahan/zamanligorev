@@ -14,13 +14,11 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    singleinstance.cpp
+        mainwindow.cpp
 
 HEADERS += \
     filecrud.h \
-        mainwindow.h \
-    singleinstance.h
+        mainwindow.h
 
 
 RESOURCES += \

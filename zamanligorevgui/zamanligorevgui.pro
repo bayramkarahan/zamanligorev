@@ -3,7 +3,7 @@
 # Project created by QtCreator 2023
 #-------------------------------------------------
 
-QT += widgets network core gui
+QT += widgets core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = zamanligorevgui
@@ -14,13 +14,11 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    singleinstance.cpp
+        mainwindow.cpp
 
 HEADERS += \
         mainwindow.h \
     filecrud.h \
-    singleinstance.h \
     hakkinda.h \
     giris.h \
     ayar.h
