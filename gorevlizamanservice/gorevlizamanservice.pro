@@ -26,6 +26,9 @@ target.path = /usr/bin
 service.files = zamanligorev.service
 service.path = /etc/systemd/system/
 
-INSTALLS += target service
+serviceconf.files = zamanligorev.conf
+serviceconf.path = /usr/share/zamanligorev/
+
+INSTALLS += target service serviceconf
 
 DISTFILES += zamanligorev.service
