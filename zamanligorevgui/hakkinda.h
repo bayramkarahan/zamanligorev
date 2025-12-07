@@ -31,13 +31,13 @@ QWidget *MainWindow::hakkinda()
     /*******************************************************/
     hakkindaPage->setFixedWidth(500);
     hakkindaPage->setFixedHeight(350);
-
+ QString yil=QString::number( QDateTime::currentDateTime().date().year());
    auto *hak=new QLabel(hakkindaPage);
 
     hak->setText("\nBu Uygulama Belirlenen Görevleri Belirli Zamanda Çalıştıran Uygulamadır."
                  "\n"
 
-                   "\n   Copyright (C) 2023 by Bayram KARAHAN                                     "
+                   "\n   Copyright (C) "+yil+" by Bayram KARAHAN                                     "
                  "\n   github.com/bayramkarahan/zamanligorev                                            "
                   "\n\n                                                                          "
                   "\n   This program is free software; you can redistribute it and/or modify    "

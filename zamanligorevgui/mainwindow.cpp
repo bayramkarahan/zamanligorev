@@ -22,17 +22,15 @@
 #include<QLabel>
 #include<QGridLayout>
 #include<QPushButton>
-
 #include<QFile>
 #include<QFileDialog>
 #include<QRegularExpression>
-#include<filecrud.h>
 #include<QTimeEdit>
 #include<QDate>
 #include<QTimer>
 #include<QTime>
 #include<QMessageBox>
-#include<ayar.h>
+
 #include<giris.h>
 #include<hakkinda.h>
 #include<QApplication>
@@ -50,7 +48,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&timer1, SIGNAL(timeout()), &loop, SLOT(quit()));
   //  connect(this, SIGNAL(replayReceived()), &loop, SLOT(quit()));
     auto appIcon = QIcon(":/icons/zamanligorev.svg");
-       this->setWindowIcon(appIcon);
+    QProcess process;
+    process.start("/bin/bash", {"-c", "dpkg -s zamanligorev | grep -i '^Version:' | awk '{print $2}'"});
+    process.waitForFinished();
+
+    QString version = QString::fromUtf8(process.readAll()).trimmed();
+    setWindowTitle("zamanligorev " + version);
+
+
+     this->setWindowIcon(appIcon);
 
 
       /**********************form ayarları yapıldı***********************/
@@ -58,9 +64,8 @@ MainWindow::MainWindow(QWidget *parent) :
      // qDebug()<<screenSize.width()/65<<screenSize.height()/35;
       boy=screenSize.width()/65;
      en=boy;
-      setFixedWidth(500);
-      setFixedHeight(400);
-      setWindowTitle("ZamanliGorev");
+      setFixedWidth(en*25);
+      setFixedHeight(en*20);
       QRect screenGeometry = QApplication::desktop()->screenGeometry();
       int x = (screenGeometry.width()/2 - this->width()/2);
       int y = (screenGeometry.height() - this->height()) / 2;
@@ -70,113 +75,17 @@ MainWindow::MainWindow(QWidget *parent) :
       tw=new QTabWidget(this);
       tw->resize(this->width(),this->height());
       /*************************SZS ekranı*******************************************/
-
-
-      init();// Başlangıç ayarları yapıldı
       qDebug()<<"ekranı göster";
       QFont ff( "Arial", 7.5, QFont::Normal);
       tw->setFont(ff);
-    tw->clear();
+        tw->clear();
      tw->addTab(giris(),"Giriş");
-      tw->addTab(ayar(),"Ayarlar");
-
+      tw->addTab(gorevListe(),"Görevler");
       tw->addTab(hakkinda(),"Hakkında");
      // this->showNormal();
 
-    /***********************Tab Ayarları Yapıldı********************/
-
-      /*********************************************************************************/
-
-
-
-
-      timerGorevBaslama = new QTimer(this);
-      connect(timerGorevBaslama, SIGNAL(timeout()), this, SLOT(gorevKontrol()));
-     // timerGorevBaslama->start(6000);
-
-
-
-
 }
-void MainWindow::init()
-{
- ///  qDebug()<<"init...";
 
-    const QDate dt = QDate::currentDate();
-    QStringList listconf=fileToList("zamanligorev.conf");
-    ayarlist=listGetList(listconf, "ayar",0);//0 sütun bilgisi olan güne göre listconf listesinden filitreleniyor
-    /******************Player ve Playlist ayarları yapılıyor***********/
-    }
-
-
-
-void MainWindow::gorevKontrol()
-{
-    // init();//ayarların yüklendiği yer
-    int currentsaniye=QTime::currentTime().hour()*60*60+QTime::currentTime().minute()*60+QTime::currentTime().second();
-
-    int currentsaatsaniye=QTime::currentTime().hour()*60*60+QTime::currentTime().minute()*60;
-    QString lineayar=listGetLine(ayarlist,QString::number(currentsaatsaniye));
-    if(lineayar!="")
-    {
-        qDebug()<<"ayar..:"<<lineayar;
-        /***************************komut1*********************************/
-        if(lineayar.split("|")[1]=="task1Time"&&task1State==false)
-        {
-            resetStatus();
-            task1State=true;
-            // qDebug()<<"task1Time";
-            QString kmt=QString("echo "+listGetLine(ayarlist,"task1Command").split("|")[2]+">/tmp/zamanligorevcommand");
-            system(kmt.toStdString().c_str());
-        }
-
-        /***************************komut2*********************************/
-        if(lineayar.split("|")[1]=="task2Time"&&task2State==false)
-        {
-            resetStatus();
-            task2State=true;
-            // qDebug()<<"task2Time";
-
-            QString kmt=QString("echo "+listGetLine(ayarlist,"task2Command").split("|")[2]+">/tmp/zamanligorevcommand");
-             system(kmt.toStdString().c_str());
-        }
-
-        /***************************komut3*********************************/
-        if(lineayar.split("|")[1]=="task3Time"&&task3State==false)
-        {
-            resetStatus();
-            task3State=true;
-            // qDebug()<<"task3Time";
-
-            QString kmt=QString("echo "+listGetLine(ayarlist,"task3Command").split("|")[2]+">/tmp/zamanligorevcommand");
-            system(kmt.toStdString().c_str());
-        }
-
-        /***************************komut4*********************************/
-        if(lineayar.split("|")[1]=="task4Time"&&task4State==false)
-        {
-            resetStatus();
-            task4State=true;
-            // qDebug()<<"task4Time";
-
-            QString kmt=QString("echo "+listGetLine(ayarlist,"task4Command").split("|")[2]+">/tmp/zamanligorevcommand");
-             system(kmt.toStdString().c_str());
-        }
-
-        /***************************komut5*********************************/
-        if(lineayar.split("|")[1]=="task5Time"&&task5State==false)
-        {
-            resetStatus();
-            task5State=true;
-            // qDebug()<<"task5Time";
-
-            QString kmt=QString("echo "+listGetLine(ayarlist,"task5Command").split("|")[2]+">/tmp/zamanligorevcommand");
-            system(kmt.toStdString().c_str());
-        }
-
-
-    }
-}
 
 
 MainWindow::~MainWindow()
@@ -196,174 +105,13 @@ QString MainWindow::saatToSaniye(QTime _zaman)
    return QString::number(zmm);
 }
 
-QStringList MainWindow::listMerge(QStringList list1, QStringList list2, int dataIndex)
-{
-    for(int i=0;i<list1.count();i++)
-    {
-        QString line=list1[i];
-        if(line!="")
-        {
-
-            QStringList lst=line.split("|");
-            list2=listRemove(list2,lst[dataIndex]);
-        }
-    }
-    for(int i=0;i<list1.count();i++)
-    {
-       list2.append(list1[i]);
-    }
-    return list2;
-}
-QStringList MainWindow::listReplace(QStringList list, QString oldData, QString newData, int index)
- {
-    QStringList liste;
-         QRegularExpression re(oldData);
-     for(int i=0;i<list.count();i++)
-     {
-         if(list[i].contains(re))
-         {
-             QStringList lst=list[i].split("|");
-             lst[index].replace(oldData, newData);
-            // qDebug()<<lst;
-
-             QString ln="";
-             if(lst.count()>0)ln.append(lst[0]);
-             if(lst.count()>1)ln.append("|").append(lst[1]);
-             if(lst.count()>2)ln.append("|").append(lst[2]);
-             if(lst.count()>3)ln.append("|").append(lst[3]);
-             if(lst.count()>4)ln.append("|").append(lst[4]);
-             if(lst.count()>5)ln.append("|").append(lst[5]);
-             if(lst.count()>6)ln.append("|").append(lst[4]);
-             if(lst.count()>7)ln.append("|").append(lst[7]);
-             if(lst.count()>8)ln.append("|").append(lst[8]);
-             if(lst.count()>9)ln.append("|").append(lst[9]);
-            // list.removeAt(i);
-             liste.append(ln);
-         }
-     }
-    // qDebug()<<list;
-     return liste;
- }
-QStringList MainWindow::listGetList(QStringList list, QString data,int index)
- {
-    QStringList liste;
-    QRegularExpression re(data);
-     for(int i=0;i<list.count();i++)
-     {
-         if(list[i].contains(re))
-         {
-            liste.append(list[i]);
-
-         }
-     }
-    // qDebug()<<list;
-     return liste;
- }
-QStringList MainWindow::listRemove(QStringList list,QString data)
- {
-         QRegularExpression re(data);
-     for(int i=0;i<list.count();i++)if(list[i].contains(data)) list.removeAt(i);
-    // qDebug()<<list;
-     return list;
- }
-QString MainWindow::listGetLine(QStringList list,QString data)
- {
-         QRegularExpression re(data);
-     for(int i=0;i<list.count();i++) if(list[i].contains(re)) return list[i];
-     //qDebug()<<list;
-     return "";
- }
-QStringList MainWindow::fileToList(QString filename)
- {
-    FileCrud *fcc=new FileCrud();
-    fcc->dosya=localDir+filename;
-    QStringList list;
-    for(int i=1;i<=fcc->fileCount();i++)
-    {
-         QString line=fcc->fileGetLine(i);
-         if(line!="")
-         {
-             line.chop(1);
-             QStringList lst=line.split("|");
-             QString ln="";
-             if(lst.count()>0)ln.append(lst[0]);
-             if(lst.count()>1)ln.append("|").append(lst[1]);
-             if(lst.count()>2)ln.append("|").append(lst[2]);
-             if(lst.count()>3)ln.append("|").append(lst[3]);
-             if(lst.count()>4)ln.append("|").append(lst[4]);
-             if(lst.count()>5)ln.append("|").append(lst[5]);
-             if(lst.count()>6)ln.append("|").append(lst[4]);
-             if(lst.count()>7)ln.append("|").append(lst[7]);
-             if(lst.count()>8)ln.append("|").append(lst[8]);
-             if(lst.count()>9)ln.append("|").append(lst[9]);
-
-             list <<ln;
-            // qDebug()<<ln;
-             // list <<lst[0]+"|"+lst[1]+"|"+lst[2]+"|"+lst[3]+"|"+lst[4]+"|"+lst[5];
-
-         }
-    }
-        return list;
- }
-void MainWindow::listToFile(QStringList list, QString filename)
- {
-  //  qDebug()<<" listtofile";
-    FileCrud *fcc=new FileCrud();
-    fcc->dosya=localDir+filename;
-    //QStringList list;
-    fcc->fileRemove();
-    for(int i=0;i<list.count();i++)
-    {
-         QString line=list[i];
-         if(line!="")
-         {
-             //line.chop(1);
-             QStringList lst=line.split("|");
-             //qDebug()<<line;
-             QString ln="";
-             if(lst.count()>0)ln.append(lst[0]);
-             if(lst.count()>1)ln.append("|").append(lst[1]);
-             if(lst.count()>2)ln.append("|").append(lst[2]);
-             if(lst.count()>3)ln.append("|").append(lst[3]);
-             if(lst.count()>4)ln.append("|").append(lst[4]);
-             if(lst.count()>5)ln.append("|").append(lst[5]);
-             if(lst.count()>6)ln.append("|").append(lst[4]);
-             if(lst.count()>7)ln.append("|").append(lst[7]);
-             if(lst.count()>8)ln.append("|").append(lst[8]);
-             if(lst.count()>9)ln.append("|").append(lst[9]);
-
-             //qDebug()<<ln;
-             fcc->fileWrite(ln);
-            // fcc->fileWrite(lst[0]+"|"+lst[1]+"|"+lst[2]+"|"+lst[3]+"|"+lst[4]+"|"+lst[5]);
-
-         }
-
-    }
-/********************file permission*************************/
-   QFile file(localDir+filename);
-    if (file.open(QFile::ReadWrite)){
-            if(!file.setPermissions(QFileDevice::WriteUser | QFileDevice::ReadUser|QFileDevice::ExeUser|
-                                    QFileDevice::WriteOwner | QFileDevice::ReadOwner|QFileDevice::ExeOwner|
-                                    QFileDevice::WriteGroup | QFileDevice::ReadGroup|QFileDevice::ExeGroup|
-                                    QFileDevice::WriteOther | QFileDevice::ReadOther|QFileDevice::ExeOther)){
-                qDebug()<< "Error in permissions";
-             }
-            file.close();
-    }
-/***********************************************/
- }
 void  MainWindow::gizle()
 {
     //hide();
    // qDebug()<<"deded";
     QWidget::hide();
     timergizle->stop();
-  //  if(socket->waitForConnected())//bağlantı varsa
-    //{
-   // if (timeoutsecond!="")    timer->start(timeoutsecond.toInt());
-    //else timer->start(3000);
-  //  qDebug()<<"Paket Gönderme Başladı..";
-    //}//else qDebug()<<"Paket Gönderilemiyor..";
+
 }
 
 
@@ -382,13 +130,12 @@ void  MainWindow::about()
 }
 void  MainWindow::widgetShow()
 {
-    init();
     qDebug()<<"ekranı göster";
     QFont ff( "Arial", 7.5, QFont::Normal);
     tw->setFont(ff);
   tw->clear();
    tw->addTab(giris(),"Giriş");
-    tw->addTab(ayar(),"Ayarlar");
+      tw->addTab(gorevListe(),"Görevler");
 
     tw->addTab(hakkinda(),"Hakkında");
     this->showNormal();
@@ -463,6 +210,160 @@ void MainWindow::closeEvent(QCloseEvent *event)
     emit WidgetClosed();
    //  event->ignore();
 
+}
+
+
+QWidget *MainWindow::gorevListe()
+{
+    DatabaseHelper *db=new DatabaseHelper(localDir+"zamanligorev.json");
+
+    // qDebug()<<"ayar click";
+    QString font="12";
+    QDialog * d = new QDialog();
+    d->setStyleSheet("font-size:"+QString::number(font.toInt())+"px;");
+    auto appIcon = QIcon(":/icons/zamanligorev.svg");
+    d->setWindowIcon(appIcon);
+    d->setWindowTitle("Önemli Gün Listesi");
+    d->setFixedSize(en*25,en*18.5);
+    auto *editW=new QWidget();
+    //editW->setStyleSheet("background-color:#ee9988;");
+
+    QLineEdit * taskCommandEdit = new QLineEdit(editW);
+    taskCommandEdit->setFixedSize(en*18.5,en*2);
+    QTimeEdit *taskTimeEdit=new QTimeEdit(editW);
+    taskTimeEdit->setFixedSize(en*5,en*2);
+
+    QLabel *taskCommandLabel=new QLabel("Çalışacak Komut",editW);
+    taskCommandLabel->setFixedSize(en*5,en*2);
+    QLabel *taskTimeLabel=new QLabel("Görev Zamanı",editW);
+    taskTimeLabel->setFixedSize(en*5,en*2);
+
+    QGridLayout *grid1 = new QGridLayout();
+    grid1->setContentsMargins(0, 10, 0,0);
+    // 1. satır: taskTimeLabel - taskTimeEdit
+    grid1->addWidget(taskTimeLabel, 0, 0, Qt::AlignLeft);
+    grid1->addWidget(taskTimeEdit, 0, 1, Qt::AlignLeft);
+
+    // 2. satır: taskCommandLabel - taskCommandEdit
+    grid1->addWidget(taskCommandLabel, 1, 0, Qt::AlignLeft);
+    grid1->addWidget(taskCommandEdit, 1, 1, Qt::AlignLeft);
+    editW->setLayout(grid1);
+    /********************************************************/
+    QToolButton *gorevEkleButton= new QToolButton;
+    gorevEkleButton->setFixedSize(QSize(en*20,en*2));
+    gorevEkleButton->setIconSize(QSize(en*20,en));
+    gorevEkleButton->setStyleSheet("Text-align:center");
+    //gorevEkleButton->setAutoRaise(true);
+    gorevEkleButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    gorevEkleButton->setText("Görev Ekle");
+
+    connect(gorevEkleButton, &QPushButton::clicked, [=]() {
+        QJsonObject obj;
+        obj["taskTime"] = taskTimeEdit->time().toString("hh:mm");
+        obj["taskCommand"] = taskCommandEdit->text();
+        db->Ekle(obj);
+
+        int i=0;
+        QJsonArray liste = db->Oku();
+        for (const QJsonValue &val : liste)
+        {
+            if (!val.isObject()) continue;
+            QJsonObject obj = val.toObject();
+            QString zaman = obj["taskTime"].toString();
+            QString komut=obj["taskCommand"].toString();
+            twl->setRowCount(i+1);
+            twl->setItem(i, 0, new QTableWidgetItem(zaman));//tarih
+            twl->setItem(i, 1, new QTableWidgetItem(komut));//gun
+            i++;
+        }
+
+
+    });
+
+    /***********************************************************************/
+    twl=new QTableWidget;
+    twl->setFixedSize(QSize(en*24,en*11));
+    twl->setColumnCount(2);
+    //twl->setRowCount(0);
+    twl->setColumnWidth(0, en*5);
+    twl->setColumnWidth(1, en*18);
+
+    twl->setHorizontalHeaderItem(0, new QTableWidgetItem("Görev Zamanı"));
+    twl->setHorizontalHeaderItem(1, new QTableWidgetItem("Görev Komutu"));
+
+    twl->setSelectionBehavior(QAbstractItemView::SelectRows);
+    twl->setSelectionMode(QAbstractItemView::SingleSelection);
+    //connect(tw, &QTableWidget::cellClicked, this, cellClicked());
+    connect(twl, SIGNAL(cellDoubleClicked(int,int)),SLOT(webTableCellDoubleClicked(int,int)));
+    twl->setRowCount(0);
+    QJsonArray liste = db->Oku();
+    //QJsonArray liste=db->Ara("gun",gn);
+    int i=0;
+    for (const QJsonValue &val : liste)
+    {
+        if (!val.isObject()) continue;
+        QJsonObject obj = val.toObject();
+        QString taskTime = obj["taskTime"].toString();
+        QString taskCommand=obj["taskCommand"].toString();
+        twl->setRowCount(twl->rowCount()+1);
+        twl->setItem(i, 0, new QTableWidgetItem(taskTime));//zaman
+        twl->setItem(i, 1, new QTableWidgetItem(taskCommand));//görev
+        i++;
+    }
+    QGridLayout *grid = new QGridLayout();
+    grid->setContentsMargins(0, 0, 0,0);
+    // 1. satır: taskTimeLabel - taskTimeEdit
+   /* grid->addWidget(taskTimeLabel, 0, 0, Qt::AlignLeft);
+    grid->addWidget(taskTimeEdit, 0, 1, Qt::AlignLeft);
+
+    // 2. satır: taskCommandLabel - taskCommandEdit
+    grid->addWidget(taskCommandLabel, 1, 0, Qt::AlignLeft);
+    grid->addWidget(taskCommandEdit, 1, 1, Qt::AlignLeft);
+*/
+    grid->addWidget(editW, 1, 0, 1, 4, Qt::AlignCenter);
+    grid->addWidget(gorevEkleButton, 2, 0, 1, 4, Qt::AlignCenter);
+
+    grid->addWidget(twl, 3, 0, 1, 4, Qt::AlignCenter);
+    d->setLayout(grid);
+    return d;
+   // int result = d->exec();
+
+}
+
+void MainWindow::webTableCellDoubleClicked(int iRow, int iColumn)
+{
+    QString tarih= twl->item(iRow, 0)->text();
+    /******************************************************************/
+
+    QMessageBox messageBox(this);
+    messageBox.setText("Uyarı");
+    messageBox.setInformativeText("Görev İçin İşlem Seçiniz!");
+    QAbstractButton *evetButton =messageBox.addButton(tr("Sil"), QMessageBox::ActionRole);
+    QAbstractButton *hayirButton =messageBox.addButton(tr("Vazgeç"), QMessageBox::ActionRole);
+    messageBox.setIcon(QMessageBox::Question);
+    messageBox.exec();
+    if (messageBox.clickedButton() == evetButton) {
+        // qDebug()<<"evet basıldı";
+        DatabaseHelper *db=new DatabaseHelper(localDir+"zamanligorev.json");
+        db->Sil("taskTime", tarih);
+        QJsonArray liste = db->Oku();
+        twl->setRowCount(0);
+        int i=0;
+        for (const QJsonValue &val : liste)
+        {
+            if (!val.isObject()) continue;
+            QJsonObject obj = val.toObject();
+            QString taskTime = obj["taskTime"].toString();
+            QString taskCommand=obj["taskCommand"].toString();
+            twl->setRowCount(twl->rowCount()+1);
+            twl->setItem(i, 0, new QTableWidgetItem(taskTime));//tarih
+            twl->setItem(i, 1, new QTableWidgetItem(taskCommand));//gun
+            i++;
+        }
+    }
+    if (messageBox.clickedButton() == hayirButton) {
+        //qDebug()<<"hayır basıldı";
+    }
 }
 
 

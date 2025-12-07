@@ -23,21 +23,27 @@ QWidget *MainWindow::giris()
 {
     QWidget *girisPage=new QWidget();
     girisPage->setFixedWidth(500);
-   girisPage->setFixedHeight(300);
-   auto  screenLabel = new QLabel(girisPage);
+    girisPage->setFixedHeight(300);
+    auto  screenLabel = new QLabel(girisPage);
     screenLabel->setFixedSize(QSize(200,200));
-     screenLabel->setAutoFillBackground(true);
-  //  screenbtn->setIcon(QIcon(":/icons/zamanligorev.svg"));
-     QPixmap *pixmap=new QPixmap(":/icons/zamanligorev.svg");
+    screenLabel->setAutoFillBackground(true);
+    // screenbtn->setIcon(QIcon(":/icons/zamanligorev.svg"));
+    QPixmap *pixmap=new QPixmap(":/icons/zamanligorev.svg");
 
-     screenLabel->setPixmap(*pixmap);
+    screenLabel->setPixmap(*pixmap);
     screenLabel->setScaledContents(true);
 
-       auto layout = new QGridLayout(girisPage);
+    auto layout = new QGridLayout(girisPage);
     layout->setContentsMargins(0, 0, 0,0);
     layout->setVerticalSpacing(10);
     //layout->setColumnMinimumWidth(0, 37);
-    layout->addWidget(new QLabel("Zamanlı Görevler"),0,0,1,1,Qt::AlignHCenter);
+    QLabel *bilgi=new QLabel();
+    bilgi->setFixedSize(QSize(480,100));
+    bilgi->setText("<b>ZamanlıGörev;</b> Linux üzerinde dakika hassasiyetli işleri otomatik olarak çalıştıran "
+                   "bir zamanlayıcıdır. Oturum açılmasa bile servis olarak görevleri yerine getirir.");
+
+    bilgi->setWordWrap(true);
+    layout->addWidget(bilgi,0,0,1,1,Qt::AlignHCenter);
     layout->addWidget(screenLabel, 1,0,1,1,Qt::AlignHCenter);
     // girisPage->setStyleSheet("background-color: #acacac");
 

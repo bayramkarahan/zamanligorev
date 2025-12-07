@@ -30,13 +30,12 @@
 #include<QTimer>
 #include<QEventLoop>
 #include<QLabel>
-
+#include<QToolButton>
 #include<QSize>
 #include<QScreen>
 #include<QTableWidget>
-namespace Ui {
-class MainWindow;
-}
+#include<Database.h>
+
 
 class MainWindow : public QMainWindow
 {
@@ -48,16 +47,9 @@ virtual void closeEvent ( QCloseEvent * event );
 public slots:
    // QWidget ayar();
     void  WidgetClosed();
-    void listToFile(QStringList list, QString filename);
-    QStringList fileToList(QString filename);
-    QString listGetLine(QStringList list,QString data);
-    QStringList listRemove(QStringList list,QString data);
-    QStringList listReplace(QStringList list,QString oldData,QString newData,int index);
-    QStringList listMerge(QStringList list1, QStringList list2,int dataIndex);
-    QStringList listGetList(QStringList list, QString data,int index);
-    void gorevKontrol();
-    bool dosyaVarmi(QString dosya);
-    void init();
+
+    void webTableCellDoubleClicked(int iRow, int iColumn);
+
     void iconActivated(QSystemTrayIcon::ActivationReason);
     void gizle();
     void about();
@@ -94,11 +86,11 @@ private:
      QString currentsaat;
      QString tempCurrentsaat;
 
-    Ui::MainWindow *ui;
      QTabWidget *tw;
     QWidget *giris();
     QWidget *hakkinda();
     QWidget *ayar();
+    QWidget *gorevListe();
     QString currentsaatState;
 
     QTimer *timerGorevBaslama;

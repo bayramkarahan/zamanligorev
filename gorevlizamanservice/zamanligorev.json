@@ -1,0 +1,6 @@
+[
+    {
+        "taskCommand": "/usr/sbin/poweroff",
+        "taskTime": "17:30"
+    }
+]

@@ -18,7 +18,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    filecrud.h \
+    Database.h \
     servis.h
 
 target.path = /usr/bin
@@ -26,7 +26,7 @@ target.path = /usr/bin
 service.files = zamanligorev.service
 service.path = /etc/systemd/system/
 
-serviceconf.files = zamanligorev.conf
+serviceconf.files = zamanligorev.json
 serviceconf.path = /usr/share/zamanligorev/
 
 INSTALLS += target service serviceconf

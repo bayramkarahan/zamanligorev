@@ -18,10 +18,8 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
-    filecrud.h \
     hakkinda.h \
-    giris.h \
-    ayar.h
+    giris.h
 
 
 RESOURCES += \

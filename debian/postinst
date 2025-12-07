@@ -1,8 +1,8 @@
 #!/bin/sh
 
-mkdir /usr/share/zamanligorev
-chmod 755 /usr/share/zamanligorev
-chmod 755 /usr/share/zamanligorev/*
+#mkdir /usr/share/zamanligorev
+#chmod 755 /usr/share/zamanligorev
+#chmod 755 /usr/share/zamanligorev/*
 systemctl daemon-reload || true
 systemctl enable zamanligorev.service || true
 systemctl start zamanligorev.service || true

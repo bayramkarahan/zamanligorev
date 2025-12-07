@@ -17,7 +17,6 @@ SOURCES += \
         mainwindow.cpp
 
 HEADERS += \
-    filecrud.h \
         mainwindow.h
 
 
