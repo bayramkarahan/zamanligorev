@@ -11,7 +11,6 @@ Debian Tabanlı Sistemlerde Kullanılmak Üzere Kodlanmış Zamanlanmış görev
 
 **1-Kapatma**
 
-poweroff
 ![zamanligorev](https://github.com/bayramkarahan/zamanligorev/blob/master/5-uygulama-zamanligorev.png)
 
 Uygulama Qt ortamında c++ ile yazılmıştır..
