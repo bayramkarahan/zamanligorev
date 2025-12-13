@@ -40,14 +40,15 @@ void Servis::gorevKontrol()
         for (const QJsonValue &item : taskList) {
             if (!item.isObject()) continue;
             QJsonObject veri = item.toObject();
+            QString index=veri["index"].toString();
             QString taskCommand=veri["taskCommand"].toString();
-            QTime taskTime = QTime::fromString(veri["taskTime"].toString(), "hh:mm");
+            QTime taskTime = QTime::fromString(veri["taskTime"].toString(), "HH:mm");
             bool selectedTask = veri.value(QStringLiteral("selectedTask")).toBool(false);
             int zaman=saatToSaniye(taskTime).toInt();
-
+            QString today = QDate::currentDate().toString("yyyyMMdd");
             if(qAbs(currentsaatsaniye-zaman)<=2&&selectedTask)
             {
-                QString key = taskCommand + QString::number(zaman);
+                 QString key = index + "_" + today + "_" + taskTime.toString("HHmm");
 
                 if (calisanGorevler.contains(key))
                     continue;
