@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#rm files from user home
+
+
+rm -rf /usr/share/zamanligorev
+
+systemctl stop zamanligorev.service || true
+systemctl disable zamanligorev.service || true

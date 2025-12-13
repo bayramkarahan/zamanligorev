@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>icons/zamanligorev.svg</file>
+        <file>icons/add.svg</file>
+        <file>icons/close.svg</file>
+        <file>icons/reboot.svg</file>
+        <file>icons/session.svg</file>
     </qresource>
 </RCC>

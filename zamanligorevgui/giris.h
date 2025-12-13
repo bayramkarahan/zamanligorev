@@ -22,8 +22,8 @@
 QWidget *MainWindow::giris()
 {
     QWidget *girisPage=new QWidget();
-    girisPage->setFixedWidth(500);
-    girisPage->setFixedHeight(300);
+    girisPage->setFixedWidth(en*32);
+    girisPage->setFixedHeight(en*18);
     auto  screenLabel = new QLabel(girisPage);
     screenLabel->setFixedSize(QSize(200,200));
     screenLabel->setAutoFillBackground(true);

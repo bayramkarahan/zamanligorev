@@ -13,10 +13,12 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += \
+        ayarwidget.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+    ayarwidget.h \
         mainwindow.h \
     hakkinda.h \
     giris.h

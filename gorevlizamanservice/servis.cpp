@@ -1,5 +1,6 @@
 #include "servis.h"
 #include<Database.h>
+QSet<QString> Servis::calisanGorevler;   // 👈 TANIM
 Servis::Servis()
 {
     qDebug()<<"servis...";
@@ -16,7 +17,7 @@ Servis::Servis()
 
     gorevKontrol();
     });
-    gorevKontrolTimer->start(6000);
+    gorevKontrolTimer->start(500);
     init();
 }
 
@@ -41,14 +42,18 @@ void Servis::gorevKontrol()
             QJsonObject veri = item.toObject();
             QString taskCommand=veri["taskCommand"].toString();
             QTime taskTime = QTime::fromString(veri["taskTime"].toString(), "hh:mm");
-
+            bool selectedTask = veri.value(QStringLiteral("selectedTask")).toBool(false);
             int zaman=saatToSaniye(taskTime).toInt();
 
-            if(qAbs(currentsaatsaniye-zaman)<=2)
+            if(qAbs(currentsaatsaniye-zaman)<=2&&selectedTask)
             {
+                QString key = taskCommand + QString::number(zaman);
+
+                if (calisanGorevler.contains(key))
+                    continue;
+                calisanGorevler.insert(key);
                 qDebug()<<"görev:"<<taskCommand<<zaman<<currentsaatsaniye;
                 system(taskCommand.toStdString().c_str());
-                break;
             }
         }
 }

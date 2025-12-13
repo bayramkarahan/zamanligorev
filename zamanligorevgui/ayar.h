@@ -22,157 +22,167 @@
 #include<QToolButton>
 #include<QCheckBox>
 #include<QMessageBox>
+#include<QApplication>
+#include<QDesktopWidget>
+#include <functional>
 
-bool MainWindow::dosyaVarmi(QString dosya)
+QWidget* MainWindow::ayar()
 {
-    FileCrud *filecdr=new FileCrud();
-    filecdr->dosya=localDir+dosya;
+    QDialog *d = new QDialog();
+    d->setWindowTitle(tr("Görev Listesi"));
+    d->setFixedSize(QSize(boy*32,boy*18));
+    d->setWindowIcon(QIcon(":/icons/zamanligorev.svg"));
 
-    if (!filecdr->fileExists())
-    {
-        QMessageBox msgError;
-        msgError.setText("Ayarları Kaydetmeden İşlem Yapamazsınız..!");
-        msgError.setIcon(QMessageBox::Critical);
-        msgError.setWindowTitle("Uyarı!");
-        msgError.exec();
-        return false;
-    }
-    else return true;
+    QTableWidget *twlh = new QTableWidget(d);
+    twlh->setFixedSize(QSize(boy*31,boy*13));
+    twlh->setColumnCount(6);
+    twlh->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Seç")));
+    twlh->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Index")));
+    twlh->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Görev Zamanı")));
+    twlh->setHorizontalHeaderItem(3, new QTableWidgetItem(tr("Görev")));
+    twlh->setHorizontalHeaderItem(4, new QTableWidgetItem(""));
+    twlh->setHorizontalHeaderItem(5, new QTableWidgetItem(""));
+
+    twlh->setSelectionBehavior(QAbstractItemView::SelectRows);
+    twlh->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    twlh->setColumnWidth(0, boy*1);
+    twlh->setColumnWidth(1, boy*1);
+    twlh->setColumnWidth(2, boy*5);
+    twlh->setColumnWidth(3, boy*16);
+    twlh->setColumnWidth(4, boy*3);
+    twlh->setColumnWidth(5, boy*2);
+twlh->setColumnHidden(1, true);
+    DatabaseHelper *db = new DatabaseHelper(localDir+"zamanligorev.json");
+
+    // Tabloyu doldur
+    auto fillTable = [twlh, db, this](void) {
+        twlh->setRowCount(0);
+        QJsonArray dizi = db->Oku();
+        int sr = 0;
+        for (const QJsonValue &item : dizi)
+        {
+            QJsonObject veri = item.toObject();
+            twlh->insertRow(sr);
+
+            QCheckBox *mCheck = new QCheckBox();
+            mCheck->setChecked(veri.value("selectedTask").toBool());
+
+            QLineEdit *index = new QLineEdit(veri.value("index").toString());
+            index->setReadOnly(true);
+            QString timeStr = veri.value("taskTime").toString();
+            QTimeEdit *taskTime = new QTimeEdit(this);
+            taskTime->setTime(QTime::fromString(timeStr, "HH:mm"));
+
+            QLineEdit *taskCommand = new QLineEdit(veri.value("taskCommand").toString());
+
+            QToolButton *saveButton = new QToolButton();
+            saveButton->setText(tr("Kaydet"));
+
+            QToolButton *removeButton = new QToolButton();
+            removeButton->setText(tr("Sil"));
+
+            // Save lambda (sadece bu satırı güncelle)
+            connect(saveButton, &QToolButton::clicked, this, [this,twlh, db, sr]() {
+                QToolButton* btn = qobject_cast<QToolButton*>(sender());
+                if (!btn) return;
+
+                // Satır numarasını bul
+                int row = -1;
+                for (int i = 0; i < twlh->rowCount(); ++i)
+                    if (twlh->cellWidget(i, 4) == btn) {  // 3: saveButton sütunu
+                        row = i;
+                        break;
+                    }
+                if (row < 0) return;
+
+                QLineEdit* idxWidget = qobject_cast<QLineEdit*>(twlh->cellWidget(row, 1));
+                QTimeEdit* taskTimeWidget = qobject_cast<QTimeEdit*>(twlh->cellWidget(row, 2));
+                QLineEdit* taskCommandWidget = qobject_cast<QLineEdit*>(twlh->cellWidget(row, 3));
+                QCheckBox* chk = qobject_cast<QCheckBox*>(twlh->cellWidget(row, 0));
+
+                if (!idxWidget || !taskTimeWidget || !taskCommandWidget || !chk) return;
+
+                // DB güncelle
+                db->Sil("index", idxWidget->text());
+                QJsonObject yeni;
+                yeni["index"] = idxWidget->text();
+                yeni["taskTime"] = taskTimeWidget->time().toString("hh:mm");
+                yeni["taskCommand"] = taskCommandWidget->text();
+                yeni["selectedTask"] = chk->isChecked();
+                db->Ekle(yeni);
+                //fillTable();
+            });
+
+            // Remove lambda (sadece bu satırı kaldır)
+            connect(removeButton, &QToolButton::clicked, this, [this, twlh, db, sr]() {
+                QToolButton* btn = qobject_cast<QToolButton*>(sender());
+                if (!btn) return;
+
+                // Satır numarasını bul
+                int row = -1;
+                for (int i = 0; i < twlh->rowCount(); ++i)
+                    if (twlh->cellWidget(i, 5) == btn) {  // 4: removeButton sütunu
+                        row = i;
+                        break;
+                    }
+
+                if (row < 0) return;
+
+                // Şimdi row ile DB ve widgetlar güncellenebilir
+                QLineEdit* idxWidget = qobject_cast<QLineEdit*>(twlh->cellWidget(row, 1));
+                if (!idxWidget) return;
+
+                // DB’den sil
+                db->Sil("index", idxWidget->text());
+
+                // Satırı kaldır
+                twlh->removeRow(row);
+            });
+
+            twlh->setCellWidget(sr, 0, mCheck);
+            twlh->setCellWidget(sr, 1, index);
+            twlh->setCellWidget(sr, 2, taskTime);
+            twlh->setCellWidget(sr, 3, taskCommand);
+            twlh->setCellWidget(sr, 4, saveButton);
+            twlh->setCellWidget(sr, 5, removeButton);
+
+            sr++;
+        }
+    };
+
+    fillTable(); // tabloyu başta doldur
+
+    // Yeni kelime ekleme
+    QToolButton *insertWordButton= new QToolButton;
+    insertWordButton->setFixedSize(QSize(boy*5,boy*4));
+    insertWordButton->setIconSize(QSize(boy*5,boy*2));
+    insertWordButton->setStyleSheet("Text-align:center");
+    insertWordButton->setIcon(QIcon(":/icons/add.svg"));
+    insertWordButton->setAutoRaise(true);
+    insertWordButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    insertWordButton->setText(tr("Yeni Görev Ekle"));
+    connect(insertWordButton, &QToolButton::clicked, this, [twlh, db, fillTable]() {
+        QJsonObject veri;
+        veri["index"] = QString::number(db->getIndex("index"));
+        veri["taskCommand"] = "sample";
+        veri["taskTime"] = "00:00";
+        veri["selectedTask"] = db->Oku().isEmpty();
+        db->Ekle(veri);
+        fillTable(); // yeni satır eklendiğinde tabloyu yeniden doldur
+    });
+
+    QVBoxLayout * vbox = new QVBoxLayout();
+    vbox->addWidget(twlh);
+    QHBoxLayout * hbox = new QHBoxLayout();
+    hbox->addWidget(insertWordButton);
+    //hbox->addWidget(webAyarGuncelleButton);
+
+    vbox->addLayout(hbox);
+
+    d->setLayout(vbox);
+
+    return d;
 }
-QWidget *MainWindow::ayar()
-{
- //   qDebug()<<"ayar";
- //   init();
 
-    QWidget *ayarPage=new QWidget();
-    ayarPage->setFixedWidth(500);
-    ayarPage->setFixedHeight(400);
-/***********************task1*************************************************/
-QTimeEdit *task1TimeEdit=new QTimeEdit;
- if(listGetLine(ayarlist,"task1Time")!="")
-    task1TimeEdit->setTime(saniyeToSaat(listGetLine(ayarlist,"task1Time").split("|")[2]));
-
- QLineEdit *task1CommandEdit=new QLineEdit;
-task1CommandEdit->setText("");
-if(listGetLine(ayarlist,"task1Command")!="")
-    if(listGetLine(ayarlist,"task1Command").split("|")[2]!="")task1CommandEdit->setText(listGetLine(ayarlist,"task1Command").split("|")[2]);
-/************************************************************************/
-
-/***********************task2*************************************************/
-QTimeEdit *task2TimeEdit=new QTimeEdit;
- if(listGetLine(ayarlist,"task2Time")!="")
-    task2TimeEdit->setTime(saniyeToSaat(listGetLine(ayarlist,"task2Time").split("|")[2]));
-
- QLineEdit *task2CommandEdit=new QLineEdit;
-task2CommandEdit->setText("");
-if(listGetLine(ayarlist,"task2Command")!="")
-    if(listGetLine(ayarlist,"task2Command").split("|")[2]!="")task2CommandEdit->setText(listGetLine(ayarlist,"task2Command").split("|")[2]);
-/************************************************************************/
-/***********************task3*************************************************/
-QTimeEdit *task3TimeEdit=new QTimeEdit;
- if(listGetLine(ayarlist,"task3Time")!="")
-    task3TimeEdit->setTime(saniyeToSaat(listGetLine(ayarlist,"task3Time").split("|")[2]));
-
- QLineEdit *task3CommandEdit=new QLineEdit;
-task3CommandEdit->setText("");
-if(listGetLine(ayarlist,"task3Command")!="")
-    if(listGetLine(ayarlist,"task3Command").split("|")[2]!="")task3CommandEdit->setText(listGetLine(ayarlist,"task3Command").split("|")[2]);
-/************************************************************************/
-
-/***********************task4*************************************************/
-QTimeEdit *task4TimeEdit=new QTimeEdit;
- if(listGetLine(ayarlist,"task4Time")!="")
-    task4TimeEdit->setTime(saniyeToSaat(listGetLine(ayarlist,"task4Time").split("|")[2]));
-
- QLineEdit *task4CommandEdit=new QLineEdit;
-task4CommandEdit->setText("");
-if(listGetLine(ayarlist,"task4Command")!="")
-    if(listGetLine(ayarlist,"task4Command").split("|")[2]!="")task4CommandEdit->setText(listGetLine(ayarlist,"task4Command").split("|")[2]);
-/************************************************************************/
-
-/***********************task5*************************************************/
-QTimeEdit *task5TimeEdit=new QTimeEdit;
- if(listGetLine(ayarlist,"task5Time")!="")
-    task5TimeEdit->setTime(saniyeToSaat(listGetLine(ayarlist,"task5Time").split("|")[2]));
-
- QLineEdit *task5CommandEdit=new QLineEdit;
-task5CommandEdit->setText("");
-if(listGetLine(ayarlist,"task5Command")!="")
-    if(listGetLine(ayarlist,"task5Command").split("|")[2]!="")task5CommandEdit->setText(listGetLine(ayarlist,"task5Command").split("|")[2]);
-/************************************************************************/
-    QPushButton *ayarKaydetButton= new QPushButton;
-    //ayarKaydetButton->setFixedSize(150, 30);
-   // ayarKaydetButton->setIconSize(QSize(150,30));
-    ayarKaydetButton->setText("Ayarları Kaydet");
-    ayarKaydetButton->setStyleSheet("Text-align:Center");
-  //  ayarKaydetButton->setFlat(true);
-   // ayarKaydetButton->setIcon(QIcon(":icons/saveprofile.png"));
-
-    connect(ayarKaydetButton, &QPushButton::clicked, [=]() {
-         QStringList _ayarlist;
-
-         _ayarlist.append("ayar|task1Time|"+saatToSaniye(task1TimeEdit->time()));
-        _ayarlist.append("ayar|task1Command|"+task1CommandEdit->text());
-
-        _ayarlist.append("ayar|task2Time|"+saatToSaniye(task2TimeEdit->time()));
-       _ayarlist.append("ayar|task2Command|"+task2CommandEdit->text());
-
-       _ayarlist.append("ayar|task3Time|"+saatToSaniye(task3TimeEdit->time()));
-      _ayarlist.append("ayar|task3Command|"+task3CommandEdit->text());
-
-      _ayarlist.append("ayar|task4Time|"+saatToSaniye(task4TimeEdit->time()));
-     _ayarlist.append("ayar|task4Command|"+task4CommandEdit->text());
-
-     _ayarlist.append("ayar|task5Time|"+saatToSaniye(task5TimeEdit->time()));
-    _ayarlist.append("ayar|task5Command|"+task5CommandEdit->text());
-
-        QStringList listconf=fileToList("zamanligorev.conf");
-        listconf=listMerge(_ayarlist,listconf,0);
-        listToFile(listconf,"zamanligorev.conf");
-        ayarlist=listGetList(fileToList("zamanligorev.conf"), "ayar",0);//0 sütun bilgisi olan güne göre list
-        init();
-        tw->widget(1)->deleteLater();
-        tw->widget(2)->deleteLater();
-        tw->addTab(ayar(),"Ayarlar");
-       //tw->addTab(saatpzrts(1),"Pzrts");
-        tw->addTab(hakkinda(),"Hakkında");
-
-
-
- });
-
-
-    auto layout = new QGridLayout(ayarPage);
-    //layout->setContentsMargins(0, 0, 0,0);
-    layout->setVerticalSpacing(5);
-   // layout->setColumnMinimumWidth(0, 37);
-    layout->addWidget(new QLabel("1. Görev"),1,0,1,1);
-    layout->addWidget(task1TimeEdit, 1,1,1,1);
-    layout->addWidget(task1CommandEdit, 1,2,1,1);
-
-    layout->addWidget(new QLabel("2. Görev"),2,0,1,1);
-    layout->addWidget(task2TimeEdit, 2,1,1,1);
-    layout->addWidget(task2CommandEdit, 2,2,1,1);
-
-    layout->addWidget(new QLabel("3. Görev"),3,0,1,1);
-    layout->addWidget(task3TimeEdit, 3,1,1,1);
-    layout->addWidget(task3CommandEdit, 3,2,1,1);
-
-    layout->addWidget(new QLabel("4. Görev"),4,0,1,1);
-    layout->addWidget(task4TimeEdit, 4,1,1,1);
-    layout->addWidget(task4CommandEdit, 4,2,1,1);
-
-
-    layout->addWidget(new QLabel("5. Görev"),5,0,1,1);
-    layout->addWidget(task5TimeEdit, 5,1,1,1);
-    layout->addWidget(task5CommandEdit, 5,2,1,1);
-
-
-
-    layout->addWidget(ayarKaydetButton,7,0,1,3);
-
-//layout->setColumnStretch(6, 255);
-
-    return ayarPage;
-}
 #endif // AYAR_H

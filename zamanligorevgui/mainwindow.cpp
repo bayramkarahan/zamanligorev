@@ -30,7 +30,6 @@
 #include<QTimer>
 #include<QTime>
 #include<QMessageBox>
-
 #include<giris.h>
 #include<hakkinda.h>
 #include<QApplication>
@@ -64,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
      // qDebug()<<screenSize.width()/65<<screenSize.height()/35;
       boy=screenSize.width()/65;
      en=boy;
-      setFixedWidth(en*25);
+      setFixedWidth(en*32);
       setFixedHeight(en*20);
       QRect screenGeometry = QApplication::desktop()->screenGeometry();
       int x = (screenGeometry.width()/2 - this->width()/2);
@@ -75,13 +74,16 @@ MainWindow::MainWindow(QWidget *parent) :
       tw=new QTabWidget(this);
       tw->resize(this->width(),this->height());
       /*************************SZS ekranı*******************************************/
-      qDebug()<<"ekranı göster";
+     // qDebug()<<"ekranı göster";
       QFont ff( "Arial", 7.5, QFont::Normal);
       tw->setFont(ff);
-        tw->clear();
+      tw->clear();
+      AyarWidget *gorev = new AyarWidget(localDir, boy, this);
+     // gorev->show();
+
      tw->addTab(giris(),"Giriş");
-      tw->addTab(gorevListe(),"Görevler");
-      tw->addTab(hakkinda(),"Hakkında");
+     tw->addTab(gorev,"Görevler");
+     tw->addTab(hakkinda(),"Hakkında");
      // this->showNormal();
 
 }
@@ -133,10 +135,11 @@ void  MainWindow::widgetShow()
     qDebug()<<"ekranı göster";
     QFont ff( "Arial", 7.5, QFont::Normal);
     tw->setFont(ff);
-  tw->clear();
-   tw->addTab(giris(),"Giriş");
-      tw->addTab(gorevListe(),"Görevler");
-
+    tw->clear();
+    AyarWidget *gorev = new AyarWidget(localDir, boy, this);
+    //gorev->show();
+    tw->addTab(giris(),"Giriş");
+    tw->addTab(gorev,"Görevler");
     tw->addTab(hakkinda(),"Hakkında");
     this->showNormal();
 
@@ -211,159 +214,4 @@ void MainWindow::closeEvent(QCloseEvent *event)
    //  event->ignore();
 
 }
-
-
-QWidget *MainWindow::gorevListe()
-{
-    DatabaseHelper *db=new DatabaseHelper(localDir+"zamanligorev.json");
-
-    // qDebug()<<"ayar click";
-    QString font="12";
-    QDialog * d = new QDialog();
-    d->setStyleSheet("font-size:"+QString::number(font.toInt())+"px;");
-    auto appIcon = QIcon(":/icons/zamanligorev.svg");
-    d->setWindowIcon(appIcon);
-    d->setWindowTitle("Önemli Gün Listesi");
-    d->setFixedSize(en*25,en*18.5);
-    auto *editW=new QWidget();
-    //editW->setStyleSheet("background-color:#ee9988;");
-
-    QLineEdit * taskCommandEdit = new QLineEdit(editW);
-    taskCommandEdit->setFixedSize(en*18.5,en*2);
-    QTimeEdit *taskTimeEdit=new QTimeEdit(editW);
-    taskTimeEdit->setFixedSize(en*5,en*2);
-
-    QLabel *taskCommandLabel=new QLabel("Çalışacak Komut",editW);
-    taskCommandLabel->setFixedSize(en*5,en*2);
-    QLabel *taskTimeLabel=new QLabel("Görev Zamanı",editW);
-    taskTimeLabel->setFixedSize(en*5,en*2);
-
-    QGridLayout *grid1 = new QGridLayout();
-    grid1->setContentsMargins(0, 10, 0,0);
-    // 1. satır: taskTimeLabel - taskTimeEdit
-    grid1->addWidget(taskTimeLabel, 0, 0, Qt::AlignLeft);
-    grid1->addWidget(taskTimeEdit, 0, 1, Qt::AlignLeft);
-
-    // 2. satır: taskCommandLabel - taskCommandEdit
-    grid1->addWidget(taskCommandLabel, 1, 0, Qt::AlignLeft);
-    grid1->addWidget(taskCommandEdit, 1, 1, Qt::AlignLeft);
-    editW->setLayout(grid1);
-    /********************************************************/
-    QToolButton *gorevEkleButton= new QToolButton;
-    gorevEkleButton->setFixedSize(QSize(en*20,en*2));
-    gorevEkleButton->setIconSize(QSize(en*20,en));
-    gorevEkleButton->setStyleSheet("Text-align:center");
-    //gorevEkleButton->setAutoRaise(true);
-    gorevEkleButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    gorevEkleButton->setText("Görev Ekle");
-
-    connect(gorevEkleButton, &QPushButton::clicked, [=]() {
-        QJsonObject obj;
-        obj["taskTime"] = taskTimeEdit->time().toString("hh:mm");
-        obj["taskCommand"] = taskCommandEdit->text();
-        db->Ekle(obj);
-
-        int i=0;
-        QJsonArray liste = db->Oku();
-        for (const QJsonValue &val : liste)
-        {
-            if (!val.isObject()) continue;
-            QJsonObject obj = val.toObject();
-            QString zaman = obj["taskTime"].toString();
-            QString komut=obj["taskCommand"].toString();
-            twl->setRowCount(i+1);
-            twl->setItem(i, 0, new QTableWidgetItem(zaman));//tarih
-            twl->setItem(i, 1, new QTableWidgetItem(komut));//gun
-            i++;
-        }
-
-
-    });
-
-    /***********************************************************************/
-    twl=new QTableWidget;
-    twl->setFixedSize(QSize(en*24,en*11));
-    twl->setColumnCount(2);
-    //twl->setRowCount(0);
-    twl->setColumnWidth(0, en*5);
-    twl->setColumnWidth(1, en*18);
-
-    twl->setHorizontalHeaderItem(0, new QTableWidgetItem("Görev Zamanı"));
-    twl->setHorizontalHeaderItem(1, new QTableWidgetItem("Görev Komutu"));
-
-    twl->setSelectionBehavior(QAbstractItemView::SelectRows);
-    twl->setSelectionMode(QAbstractItemView::SingleSelection);
-    //connect(tw, &QTableWidget::cellClicked, this, cellClicked());
-    connect(twl, SIGNAL(cellDoubleClicked(int,int)),SLOT(webTableCellDoubleClicked(int,int)));
-    twl->setRowCount(0);
-    QJsonArray liste = db->Oku();
-    //QJsonArray liste=db->Ara("gun",gn);
-    int i=0;
-    for (const QJsonValue &val : liste)
-    {
-        if (!val.isObject()) continue;
-        QJsonObject obj = val.toObject();
-        QString taskTime = obj["taskTime"].toString();
-        QString taskCommand=obj["taskCommand"].toString();
-        twl->setRowCount(twl->rowCount()+1);
-        twl->setItem(i, 0, new QTableWidgetItem(taskTime));//zaman
-        twl->setItem(i, 1, new QTableWidgetItem(taskCommand));//görev
-        i++;
-    }
-    QGridLayout *grid = new QGridLayout();
-    grid->setContentsMargins(0, 0, 0,0);
-    // 1. satır: taskTimeLabel - taskTimeEdit
-   /* grid->addWidget(taskTimeLabel, 0, 0, Qt::AlignLeft);
-    grid->addWidget(taskTimeEdit, 0, 1, Qt::AlignLeft);
-
-    // 2. satır: taskCommandLabel - taskCommandEdit
-    grid->addWidget(taskCommandLabel, 1, 0, Qt::AlignLeft);
-    grid->addWidget(taskCommandEdit, 1, 1, Qt::AlignLeft);
-*/
-    grid->addWidget(editW, 1, 0, 1, 4, Qt::AlignCenter);
-    grid->addWidget(gorevEkleButton, 2, 0, 1, 4, Qt::AlignCenter);
-
-    grid->addWidget(twl, 3, 0, 1, 4, Qt::AlignCenter);
-    d->setLayout(grid);
-    return d;
-   // int result = d->exec();
-
-}
-
-void MainWindow::webTableCellDoubleClicked(int iRow, int iColumn)
-{
-    QString tarih= twl->item(iRow, 0)->text();
-    /******************************************************************/
-
-    QMessageBox messageBox(this);
-    messageBox.setText("Uyarı");
-    messageBox.setInformativeText("Görev İçin İşlem Seçiniz!");
-    QAbstractButton *evetButton =messageBox.addButton(tr("Sil"), QMessageBox::ActionRole);
-    QAbstractButton *hayirButton =messageBox.addButton(tr("Vazgeç"), QMessageBox::ActionRole);
-    messageBox.setIcon(QMessageBox::Question);
-    messageBox.exec();
-    if (messageBox.clickedButton() == evetButton) {
-        // qDebug()<<"evet basıldı";
-        DatabaseHelper *db=new DatabaseHelper(localDir+"zamanligorev.json");
-        db->Sil("taskTime", tarih);
-        QJsonArray liste = db->Oku();
-        twl->setRowCount(0);
-        int i=0;
-        for (const QJsonValue &val : liste)
-        {
-            if (!val.isObject()) continue;
-            QJsonObject obj = val.toObject();
-            QString taskTime = obj["taskTime"].toString();
-            QString taskCommand=obj["taskCommand"].toString();
-            twl->setRowCount(twl->rowCount()+1);
-            twl->setItem(i, 0, new QTableWidgetItem(taskTime));//tarih
-            twl->setItem(i, 1, new QTableWidgetItem(taskCommand));//gun
-            i++;
-        }
-    }
-    if (messageBox.clickedButton() == hayirButton) {
-        //qDebug()<<"hayır basıldı";
-    }
-}
-
 

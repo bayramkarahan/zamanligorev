@@ -13,6 +13,7 @@ class Servis: public QObject
     Q_OBJECT
 public:
     Servis();
+    static QSet<QString> calisanGorevler;
 public slots:
    void init();
    void gorevKontrol();

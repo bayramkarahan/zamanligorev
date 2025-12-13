@@ -1,5 +1,5 @@
 QT -= gui
-TARGET = zamanligorevservis
+TARGET = zamanligorevservice
 
 CONFIG += c++17 console
 CONFIG -= app_bundle

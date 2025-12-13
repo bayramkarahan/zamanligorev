@@ -14,15 +14,5 @@ Debian Tabanlı Sistemlerde Kullanılmak Üzere Kodlanmış Zamanlanmış görev
 poweroff
 ![zamanligorev](https://github.com/bayramkarahan/zamanligorev/blob/master/5-uygulama-zamanligorev.png)
 
-**2- Yeniden Başlatma **
-
-reboot
-![zamanligorev](https://github.com/bayramkarahan/zamanligorev/blob/master/6-uygulama-zamanligorev.png)
-
-**3-Oturum Kapatma**
-
-loginctl terminate-seat seat0
-![zamanligorev](https://github.com/bayramkarahan/zamanligorev/blob/master/6-uygulama-zamanligorev.png)
-
 Uygulama Qt ortamında c++ ile yazılmıştır..
 <br/>

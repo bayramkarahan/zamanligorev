@@ -35,7 +35,7 @@
 #include<QScreen>
 #include<QTableWidget>
 #include<Database.h>
-
+#include<ayarwidget.h>
 
 class MainWindow : public QMainWindow
 {
@@ -47,41 +47,21 @@ virtual void closeEvent ( QCloseEvent * event );
 public slots:
    // QWidget ayar();
     void  WidgetClosed();
-
-    void webTableCellDoubleClicked(int iRow, int iColumn);
-
     void iconActivated(QSystemTrayIcon::ActivationReason);
     void gizle();
     void about();
       void  widgetShow();
     QTime saniyeToSaat(QString _zaman);
     QString saatToSaniye(QTime _zaman);
-
-    void resetStatus()
-        {
-        task1State=false;
-        task2State=false;
-        task3State=false;
-        task4State=false;
-        task5State=false;
-        };
-
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
-    bool task1State=false;
-    bool task2State=false;
-    bool task3State=false;
-    bool task4State=false;
-    bool task5State=false;
 
      QTableWidget *twl;
      QString localDir;
      QStringList ayarlist;
-
-     QString trn;
      QString gun;
      QString currentsaat;
      QString tempCurrentsaat;
@@ -89,8 +69,6 @@ private:
      QTabWidget *tw;
     QWidget *giris();
     QWidget *hakkinda();
-    QWidget *ayar();
-    QWidget *gorevListe();
     QString currentsaatState;
 
     QTimer *timerGorevBaslama;
