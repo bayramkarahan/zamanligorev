@@ -123,6 +123,25 @@ void AyarWidget::setupUI()
         db->Ekle(veri);
         fillTable();
     });
+
+    // lockscreen gorev
+    insertLockButton = new QToolButton(this);
+    insertLockButton->setFixedSize(QSize(boy*5, boy*4));
+    insertLockButton->setIconSize(QSize(boy*5, boy*2));
+    insertLockButton->setIcon(QIcon(":/icons/lock.svg"));
+    insertLockButton->setAutoRaise(true);
+    insertLockButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    insertLockButton->setText(tr("Oturum Kilitle\n Görevi Ekle"));
+
+    connect(insertLockButton, &QToolButton::clicked, this, [this]() {
+        QJsonObject veri;
+        veri["index"] = QString::number(db->getIndex("index"));
+        veri["taskCommand"] = "sessionlockzm";
+        veri["taskTime"] = "00:00";
+        veri["selectedTask"] = db->Oku().isEmpty();
+        db->Ekle(veri);
+        fillTable();
+    });
     QVBoxLayout *vbox = new QVBoxLayout(this);
     QHBoxLayout *hbox = new QHBoxLayout();
 
@@ -130,6 +149,7 @@ void AyarWidget::setupUI()
     hbox->addWidget(insertPowerOffButton);
     hbox->addWidget(insertRebootButton);
     hbox->addWidget(insertLogoutButton);
+    hbox->addWidget(insertLockButton);
     hbox->addWidget(insertTaskButton);
     vbox->addLayout(hbox);
 

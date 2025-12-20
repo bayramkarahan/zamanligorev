@@ -21,11 +21,11 @@ private:
 
     int boy;
     QString localDir;
-
     QTableWidget *twlh;
     QToolButton *insertTaskButton;
     QToolButton *insertPowerOffButton;
     QToolButton *insertRebootButton;
     QToolButton *insertLogoutButton;
+    QToolButton *insertLockButton;
     DatabaseHelper *db;
 };

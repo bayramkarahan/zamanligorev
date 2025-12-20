@@ -1,0 +1,16 @@
+#!/bin/bash
+
+SEAT=$(loginctl list-seats --no-legend | awk '{print $1}' | head -n 1)
+
+if [ -z "$SEAT" ]; then
+    echo "❌ Seat bulunamadı"
+    exit 1
+fi
+
+SEAT_NUM="${SEAT#seat}"
+SEAT_PATH="/org/freedesktop/DisplayManager/Seat${SEAT_NUM}"
+
+echo "🔍 Seat: $SEAT"
+echo "📍 Seat path: $SEAT_PATH"
+
+XDG_SEAT_PATH="$SEAT_PATH" dm-tool lock
