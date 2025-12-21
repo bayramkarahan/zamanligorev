@@ -136,7 +136,7 @@ void AyarWidget::setupUI()
     connect(insertLockButton, &QToolButton::clicked, this, [this]() {
         QJsonObject veri;
         veri["index"] = QString::number(db->getIndex("index"));
-        veri["taskCommand"] = "sessionlockzm";
+        veri["taskCommand"] = "sessionlockzg";
         veri["taskTime"] = "00:00";
         veri["selectedTask"] = db->Oku().isEmpty();
         db->Ekle(veri);

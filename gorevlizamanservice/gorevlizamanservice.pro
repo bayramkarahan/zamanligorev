@@ -29,7 +29,7 @@ service.path = /etc/systemd/system/
 serviceconf.files = zamanligorev.json
 serviceconf.path = /usr/share/zamanligorev/
 
-sessionlock.files = sessionlockzm
+sessionlock.files = sessionlockzg
 sessionlock.path = /usr/bin/
 
 INSTALLS += target service serviceconf sessionlock
