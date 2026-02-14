@@ -7,7 +7,7 @@
 #include<QRegularExpression>
 #include<QFileSystemWatcher>
 #include<QJsonArray>
-
+#include<QProcess>
 class Servis: public QObject
 {
     Q_OBJECT
@@ -19,6 +19,7 @@ public slots:
    void gorevKontrol();
    QTime saniyeToSaat(QString _zaman);
    QString saatToSaniye(QTime _zaman);
+   bool isLoginScreen();
 
    private:
 

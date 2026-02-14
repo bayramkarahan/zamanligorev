@@ -1,0 +1,12 @@
+Package: zamanligorev-dbgsym
+Source: zamanligorev
+Version: 1.9.0
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: Bayram KARAHAN <bayramk@gmail.com>
+Installed-Size: 72
+Depends: zamanligorev (= 1.9.0)
+Section: debug
+Priority: optional
+Description: debug symbols for zamanligorev
+Build-Ids: 35a69531b61774bcdcd3aef89d65e847eb7a61b3 4207b46ab0bce7fee1bb6bf149218af7aae42b82 9e3cc7e4ea6c3cbf8b4d4920c011727d2e6ca8d4

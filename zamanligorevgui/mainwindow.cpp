@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
      // qDebug()<<screenSize.width()/65<<screenSize.height()/35;
       boy=screenSize.width()/65;
      en=boy;
-      setFixedWidth(en*32);
+      setFixedWidth(en*38);
       setFixedHeight(en*20);
       QRect screenGeometry = QApplication::desktop()->screenGeometry();
       int x = (screenGeometry.width()/2 - this->width()/2);

@@ -1,0 +1,9 @@
+10702ddf60b699ebd0ff5fe12362db18  usr/bin/sessionlockzg
+5d0cbd726e2d3799b62d77a9cd71b60a  usr/bin/zamanligorevgui
+6ba6e29f9c68d235893a05029fa86b60  usr/bin/zamanligorevservice
+32d6a28f52b9486cb7f305e7d58a4f70  usr/bin/zamanligorevtray
+973f4c7d9ae12d9843483242cc19c5ef  usr/share/applications/zamanligorevgui.desktop
+b8e7b462465541313304a6c060745358  usr/share/doc/zamanligorev/changelog.gz
+bdaa3a85d042c8dbfdec0b85d51e9c7c  usr/share/doc/zamanligorev/copyright
+9ecfacf242210759752404cc66a1c1f3  usr/share/icons/zamanligorev.svg
+b4a822485d41113e250e278bf615d0a6  usr/share/zamanligorev/zamanligorev.json

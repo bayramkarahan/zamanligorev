@@ -27,5 +27,6 @@ private:
     QToolButton *insertRebootButton;
     QToolButton *insertLogoutButton;
     QToolButton *insertLockButton;
+    QToolButton *insertNologinButton;
     DatabaseHelper *db;
 };

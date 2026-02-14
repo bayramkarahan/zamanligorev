@@ -1,0 +1,8 @@
+[
+    {
+        "index": "1",
+        "selectedTask": true,
+        "taskCommand": "/usr/sbin/poweroff",
+        "taskTime": "17:00"
+    }
+]

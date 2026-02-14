@@ -22,11 +22,11 @@ AyarWidget::AyarWidget(const QString& localDir, int boy, QWidget *parent)
 void AyarWidget::setupUI()
 {
     setWindowTitle(tr("Görev Listesi"));
-    setFixedSize(QSize(boy*32, boy*18));
+    setFixedSize(QSize(boy*38, boy*19));
     setWindowIcon(QIcon(":/icons/zamanligorev.svg"));
 
     twlh = new QTableWidget(this);
-    twlh->setFixedSize(QSize(boy*31, boy*13));
+    twlh->setFixedSize(QSize(boy*37, boy*13));
     twlh->setColumnCount(6);
 
     twlh->setHorizontalHeaderLabels({
@@ -44,13 +44,13 @@ void AyarWidget::setupUI()
     twlh->setColumnWidth(0, boy*1);
     twlh->setColumnWidth(1, boy*1);
     twlh->setColumnWidth(2, boy*5);
-    twlh->setColumnWidth(3, boy*18);
+    twlh->setColumnWidth(3, boy*24);
     twlh->setColumnWidth(4, boy*3);
     twlh->setColumnWidth(5, boy*2);
     twlh->setColumnHidden(1, true);
     // Yeni Görev
     insertTaskButton = new QToolButton(this);
-    insertTaskButton->setFixedSize(QSize(boy*5, boy*4));
+    insertTaskButton->setFixedSize(QSize(boy*5, boy*5));
     insertTaskButton->setIconSize(QSize(boy*5, boy*2));
     insertTaskButton->setIcon(QIcon(":/icons/add.svg"));
     insertTaskButton->setAutoRaise(true);
@@ -69,7 +69,7 @@ void AyarWidget::setupUI()
 
     // poweroff
     insertPowerOffButton = new QToolButton(this);
-    insertPowerOffButton->setFixedSize(QSize(boy*5, boy*4));
+    insertPowerOffButton->setFixedSize(QSize(boy*5, boy*5));
     insertPowerOffButton->setIconSize(QSize(boy*5, boy*2));
     insertPowerOffButton->setIcon(QIcon(":/icons/close.svg"));
     insertPowerOffButton->setAutoRaise(true);
@@ -88,7 +88,7 @@ void AyarWidget::setupUI()
 
     // reboot Görev
     insertRebootButton = new QToolButton(this);
-    insertRebootButton->setFixedSize(QSize(boy*5, boy*4));
+    insertRebootButton->setFixedSize(QSize(boy*5, boy*5));
     insertRebootButton->setIconSize(QSize(boy*5, boy*2));
     insertRebootButton->setIcon(QIcon(":/icons/reboot.svg"));
     insertRebootButton->setAutoRaise(true);
@@ -107,7 +107,7 @@ void AyarWidget::setupUI()
 
     // logout Görev
     insertLogoutButton = new QToolButton(this);
-    insertLogoutButton->setFixedSize(QSize(boy*5, boy*4));
+    insertLogoutButton->setFixedSize(QSize(boy*5, boy*5));
     insertLogoutButton->setIconSize(QSize(boy*5, boy*2));
     insertLogoutButton->setIcon(QIcon(":/icons/session.svg"));
     insertLogoutButton->setAutoRaise(true);
@@ -124,9 +124,31 @@ void AyarWidget::setupUI()
         fillTable();
     });
 
+    // insertNologinButton gorev
+    insertNologinButton = new QToolButton(this);
+    insertNologinButton->setFixedSize(QSize(boy*7, boy*5));
+    insertNologinButton->setIconSize(QSize(boy*8, boy*2));
+    insertNologinButton->setIcon(QIcon(":/icons/session.svg"));
+    insertNologinButton->setAutoRaise(true);
+    insertNologinButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    insertNologinButton->setText(tr("Oturum Açılmadıysa\nKapat\nGörevi Ekle"));
+    QFont fnt;
+    fnt.setPixelSize(10);
+    //insertNologinButton->setFont(fnt);
+
+    connect(insertNologinButton, &QToolButton::clicked, this, [this]() {
+        QJsonObject veri;
+        veri["index"] = QString::number(db->getIndex("index"));
+        veri["taskCommand"] = "nologinpoweroff";
+        veri["taskTime"] = "00:10";
+        veri["selectedTask"] = db->Oku().isEmpty();
+        db->Ekle(veri);
+        fillTable();
+    });
+
     // lockscreen gorev
     insertLockButton = new QToolButton(this);
-    insertLockButton->setFixedSize(QSize(boy*5, boy*4));
+    insertLockButton->setFixedSize(QSize(boy*5, boy*5));
     insertLockButton->setIconSize(QSize(boy*5, boy*2));
     insertLockButton->setIcon(QIcon(":/icons/lock.svg"));
     insertLockButton->setAutoRaise(true);
@@ -150,6 +172,8 @@ void AyarWidget::setupUI()
     hbox->addWidget(insertRebootButton);
     hbox->addWidget(insertLogoutButton);
     hbox->addWidget(insertLockButton);
+    hbox->addWidget(insertNologinButton);
+
     hbox->addWidget(insertTaskButton);
     vbox->addLayout(hbox);
 

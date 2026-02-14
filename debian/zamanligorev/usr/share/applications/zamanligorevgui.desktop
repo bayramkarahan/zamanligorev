@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=zamanligorev Application
+Name[tr]=zamanligorev Uygulaması
+Type=Application
+Comment=Simple Qt based zamanligorev Application
+Comment[tr]=Basit Qt tabanlı zamanligorev Uygulaması
+Terminal=false
+Exec=sh -c "pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY zamanligorevgui"
+Icon=/usr/share/icons/zamanligorev.svg
+Categories=Qt;Utility;
+Keywords=zaman;görev;task;
+GenericName=ZamanliGorev
+Name[tr_TR]=ZamanliGorev
