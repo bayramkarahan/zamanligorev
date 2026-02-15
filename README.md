@@ -13,5 +13,10 @@ Debian Tabanlı Sistemlerde Kullanılmak Üzere Kodlanmış Zamanlanmış görev
 
 ![zamanligorev](https://github.com/bayramkarahan/zamanligorev/blob/master/5-uygulama-zamanligorev.png)
 
+**2-Oturum Açma Yapılmadığında Kapatma**
+
+![zamanligorev](https://github.com/bayramkarahan/zamanligorev/blob/master/6-uygulama-zamanligorev.png)
+
+
 Uygulama Qt ortamında c++ ile yazılmıştır..
 <br/>
